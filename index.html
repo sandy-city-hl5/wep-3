@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع الأخبار</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        header {
+            background: #007bff;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .news-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: right;
+        }
+        .news-item {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border-radius: 8px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>موقع الأخبار</h1>
+</header>
+
+<div class="news-container">
+    <h2>آخر الأخبار</h2>
+    <div id="news-list"></div>
+    <button onclick="showCreateNewsModal()">إنشاء خبر جديد</button>
+</div>
+
+<div id="create-news-modal" style="display: none;">
+    <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h3>إنشاء خبر جديد</h3>
+        <label for="news-title">عنوان الخبر:</label><br>
+        <input type="text" id="news-title" required><br><br>
+        <label for="news-content">محتوى الخبر:</label><br>
+        <textarea id="news-content" required></textarea><br><br>
+        <button onclick="addNews()">إضافة</button>
+        <button onclick="closeCreateNewsModal()">إغلاق</button>
+    </div>
+</div>
+
+<footer>
+    <p>حقوق الطبع والنشر &copy; 2024 موقع الأخبار</p>
+</footer>
+
+<script>
+    let news = JSON.parse(localStorage.getItem('news')) || [];
+
+    function displayNews() {
+        const newsList = document.getElementById('news-list');
+        newsList.innerHTML = '';
+        news.forEach((item, index) => {
+            newsList.innerHTML += `
+                <div class="news-item">
+                    <h3>${item.title}</h3>
+                    <p>${item.content}</p>
+                    <button onclick="removeNews(${index})">حذف الخبر</button>
+                </div>
+            `;
+        });
+    }
+
+    function showCreateNewsModal() {
+        document.getElementById('create-news-modal').style.display = 'block';
+    }
+
+    function closeCreateNewsModal() {
+        document.getElementById('create-news-modal').style.display = 'none';
+        document.getElementById('news-title').value = '';
+        document.getElementById('news-content').value = '';
+    }
+
+    function addNews() {
+        const title = document.getElementById('news-title').value;
+        const content = document.getElementById('news-content').value;
+        if (title && content) {
+            news.push({ title, content });
+            localStorage.setItem('news', JSON.stringify(news));
+            displayNews();
+            closeCreateNewsModal();
+        } else {
+            alert("يرجى ملء جميع الحقول.");
+        }
+    }
+
+    function removeNews(index) {
+        news.splice(index, 1);
+        localStorage.setItem('news', JSON.stringify(news));
+        displayNews();
+    }
+
+    window.onload = displayNews;
+</script>
+
+</body>
+</html>
