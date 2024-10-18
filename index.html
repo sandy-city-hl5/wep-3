@@ -6,129 +6,97 @@
     <title>موقع الأخبار</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #000;
+            color: white;
             text-align: center;
-        }
-        header {
-            background: #007bff;
-            color: #fff;
             padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .news-container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: right;
-        }
-        .news-item {
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin: 15px 0;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        footer {
-            margin-top: 20px;
-            padding: 10px;
-            background: #007bff;
-            color: #fff;
-            border-radius: 8px;
         }
         button {
-            margin: 5px;
-            padding: 10px 15px;
-            background-color: #dc3545;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #555;
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
         }
         button:hover {
-            background-color: #c82333;
+            background-color: #777;
+        }
+        #loginDialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            color: white;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 99;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>موقع الأخبار</h1>
-</header>
+    <h1>مرحبًا بك في موقع الأخبار</h1>
+    <button onclick="openLoginDialog()">إذا كنت مشرفًا، اضغط هنا</button>
+    <button onclick="userPage()">إذا كنت مستخدمًا، اضغط هنا</button>
 
-<div class="news-container">
-    <h2>آخر الأخبار</h2>
-    <div id="news-list"></div>
-    <button onclick="showCreateNewsModal()">إنشاء خبر جديد</button>
-</div>
+    <div id="overlay" onclick="closeLoginDialog()"></div>
 
-<div id="create-news-modal" style="display: none;">
-    <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <h3>إنشاء خبر جديد</h3>
-        <label for="news-title">عنوان الخبر:</label><br>
-        <input type="text" id="news-title" required><br><br>
-        <label for="news-content">محتوى الخبر:</label><br>
-        <textarea id="news-content" required></textarea><br><br>
-        <button onclick="addNews()">إضافة</button>
-        <button onclick="closeCreateNewsModal()">إغلاق</button>
+    <!-- مربع حوار تسجيل الدخول -->
+    <div id="loginDialog">
+        <h2>تسجيل دخول كمشرف</h2>
+        <label for="password">كلمة المرور:</label>
+        <input type="password" id="password"><br>
+        <button onclick="login()">دخول</button>
+        <button onclick="closeLoginDialog()">إغلاق</button>
     </div>
-</div>
 
-<footer>
-    <p>حقوق الطبع والنشر &copy; 2024 موقع الأخبار</p>
-</footer>
+    <script>
+        const correctPassword = "hl5 sandy"; // كلمة مرور المشرف
 
-<script>
-    let news = JSON.parse(localStorage.getItem('news')) || [];
-
-    function displayNews() {
-        const newsList = document.getElementById('news-list');
-        newsList.innerHTML = '';
-        news.forEach((item, index) => {
-            newsList.innerHTML += `
-                <div class="news-item">
-                    <h3>${item.title}</h3>
-                    <p>${item.content}</p>
-                    <button onclick="removeNews(${index})">حذف الخبر</button>
-                </div>
-            `;
-        });
-    }
-
-    function showCreateNewsModal() {
-        document.getElementById('create-news-modal').style.display = 'block';
-    }
-
-    function closeCreateNewsModal() {
-        document.getElementById('create-news-modal').style.display = 'none';
-        document.getElementById('news-title').value = '';
-        document.getElementById('news-content').value = '';
-    }
-
-    function addNews() {
-        const title = document.getElementById('news-title').value;
-        const content = document.getElementById('news-content').value;
-        if (title && content) {
-            news.push({ title, content });
-            localStorage.setItem('news', JSON.stringify(news));
-            displayNews();
-            closeCreateNewsModal();
-        } else {
-            alert("يرجى ملء جميع الحقول.");
+        function openLoginDialog() {
+            document.getElementById('overlay').style.display = 'block'; // عرض الخلفية
+            document.getElementById('loginDialog').style.display = 'block'; // عرض مربع الحوار
         }
-    }
 
-    function removeNews(index) {
-        news.splice(index, 1);
-        localStorage.setItem('news', JSON.stringify(news));
-        displayNews();
-    }
+        function closeLoginDialog() {
+            document.getElementById('overlay').style.display = 'none'; // إخفاء الخلفية
+            document.getElementById('loginDialog').style.display = 'none'; // إخفاء مربع الحوار
+            clearLoginForm(); // مسح النموذج
+        }
 
-    window.onload = displayNews;
-</script>
+        function clearLoginForm() {
+            document.getElementById('password').value = '';
+        }
+
+        function login() {
+            const password = document.getElementById('password').value;
+            if (password === correctPassword) {
+                closeLoginDialog();
+                window.location.href = 'admin.html'; // إعادة توجيه إلى صفحة المشرف
+            } else {
+                alert("كلمة السر غير صحيحة.");
+            }
+        }
+
+        function userPage() {
+            window.location.href = 'user.html'; // إعادة توجيه إلى صفحة المستخدم
+        }
+    </script>
 
 </body>
 </html>
