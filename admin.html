@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة المشرف</title>
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #777;
+        }
+        #newsDialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            color: white;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 99;
+        }
+        #newsList {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>صفحة المشرف</h1>
+    <button onclick="openNewsDialog()">إنشاء خبر</button>
+
+    <div id="overlay" onclick="closeNewsDialog()"></div>
+
+    <!-- مربع حوار إنشاء الخبر -->
+    <div id="newsDialog">
+        <h2>إضافة خبر جديد</h2>
+        <label for="newsTitle">عنوان الخبر:</label><br>
+        <input type="text" id="newsTitle" placeholder="أدخل عنوان الخبر"><br>
+        <label for="newsContent">محتوى الخبر:</label><br>
+        <textarea id="newsContent" placeholder="أدخل محتوى الخبر"></textarea><br>
+        <button onclick="addNews()">إضافة الخبر</button>
+        <button onclick="closeNewsDialog()">إغلاق</button>
+    </div>
+
+    <h2>الأخبار المضافة</h2>
+    <div id="newsList"></div>
+
+    <script>
+        function openNewsDialog() {
+            document.getElementById('overlay').style.display = 'block'; 
+            document.getElementById('newsDialog').style.display = 'block'; 
+        }
+
+        function closeNewsDialog() {
+            document.getElementById('overlay').style.display = 'none'; 
+            document.getElementById('newsDialog').style.display = 'none'; 
+            clearNewsForm(); 
+        }
+
+        function clearNewsForm() {
+            document.getElementById('newsTitle').value = '';
+            document.getElementById('newsContent').value = '';
+        }
+
+        function addNews() {
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+
+            if (title && content) {
+                const news = { title: title, content: content };
+
+                // الحصول على الأخبار الموجودة في Local Storage
+                let newsList = JSON.parse(localStorage.getItem('newsList')) || [];
+                newsList.push(news);
+
+                // تخزين الأخبار المحدثة في Local Storage
+                localStorage.setItem('newsList', JSON.stringify(newsList));
+
+                closeNewsDialog(); 
+                displayNews(); // تحديث قائمة الأخبار
+            } else {
+                alert("يرجى ملء جميع الحقول.");
+            }
+        }
+
+        function deleteNews(index) {
+            // الحصول على الأخبار الموجودة في Local Storage
+            let newsList = JSON.parse(localStorage.getItem('newsList')) || [];
+            newsList.splice(index, 1); // حذف الخبر من القائمة
+
+            // تخزين الأخبار المحدثة في Local Storage
+            localStorage.setItem('newsList', JSON.stringify(newsList));
+
+            displayNews(); // تحديث قائمة الأخبار
+        }
+
+        function displayNews() {
+            const newsList = JSON.parse(localStorage.getItem('newsList')) || [];
+            const newsContainer = document.getElementById('newsList');
+            newsContainer.innerHTML = ''; // مسح القائمة القديمة
+
+            newsList.forEach((news, index) => {
+                const newsItem = document.createElement('div');
+                newsItem.innerHTML = `<h3>${news.title}</h3><p>${news.content}</p>
+                                      <button onclick="deleteNews(${index})">حذف الخبر</button>`;
+                newsContainer.appendChild(newsItem);
+            });
+        }
+
+        // عرض الأخبار عند تحميل الصفحة
+        window.onload = displayNews;
+
+    </script>
+
+</body>
+</html>
