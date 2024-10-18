@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة المستخدم</title>
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 20px;
+        }
+        #newsList {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>صفحة المستخدم</h1>
+    <h2>الأخبار المضافة</h2>
+    <div id="newsList"></div>
+
+    <script>
+        function displayNews() {
+            const newsList = JSON.parse(localStorage.getItem('newsList')) || [];
+            const newsContainer = document.getElementById('newsList');
+            newsContainer.innerHTML = ''; // مسح القائمة القديمة
+
+            newsList.forEach(news => {
+                const newsItem = document.createElement('div');
+                newsItem.innerHTML = `<h3>${news.title}</h3><p>${news.content}</p>`;
+                newsContainer.appendChild(newsItem);
+            });
+        }
+
+        // عرض الأخبار عند تحميل الصفحة
+        window.onload = displayNews;
+
+    </script>
+
+</body>
+</html>
